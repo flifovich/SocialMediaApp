@@ -1,0 +1,43 @@
+.root {
+    background-color: inherit;
+    border: 1px solid #666;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    color: white;
+
+    h3 {
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .items {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .item {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8rem;
+        padding: 0.5rem;
+
+        .avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+        }
+
+        .name {
+            font-weight: bold;
+        }
+
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            width: auto;
+            margin: 0.3rem 0 0;
+        }
+    }
+    
+}

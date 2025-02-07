@@ -1,0 +1,52 @@
+.root{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 9999px;
+    margin-block: 1rem;
+    font-weight: bold;
+    transition: 0.3s;
+
+    &.small {
+        padding: 0.2rem;
+        font-size: 0.8rem;
+    }
+
+    &.medium {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    &.large {
+        padding: 1rem;
+    }
+
+    &:disabled {
+        color: black;
+        background-color: rgb(217,217,217);
+        cursor: not-allowed;
+    }
+
+    svg {
+        width: 1.5rem;
+    }
+
+    &:not(:disabled, .outline):hover {
+        background-color: var(--secondary-color);
+    }
+
+    &.outline{
+        background-color: white;
+        color: var(--primary-color);
+        border: 1px solid rgba(0,0,0,0.6);
+        color: black;
+        font-weight: normal;
+
+        &:not(:disabled):hover {
+            border-color: rgb(0,0,0);
+        }
+    }
+}

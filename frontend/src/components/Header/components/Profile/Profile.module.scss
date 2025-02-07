@@ -1,0 +1,56 @@
+.root{
+
+    .toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-right: 1px solid white;
+        padding-right: 1rem;
+    }
+
+    .avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        
+    }
+
+    .menu{
+        background-color: black;
+        border: 1px solid white;
+        padding: 1rem;
+        border-radius: 0.3rem 0 0.3rem 0.3rem;
+        position: absolute;
+        top: 5rem;
+        right: 1rem;
+        width: min(18, 100%);
+        word-wrap: break-word;
+
+        .content {
+            display: grid;
+            grid-template-columns: 4rem 1fr;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .name {
+            font-weight: bold;
+            text-wrap: nowrap;
+        }
+
+        .avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .links {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+
+    }
+}

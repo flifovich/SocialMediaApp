@@ -2,14 +2,14 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:9.2.0
     environment:
       MYSQL_DATABASE: socialapp
       MYSQL_ROOT_PASSWORD: root
     ports:
       - '3306:3306'
   mailhog:
-    image: mailhog/mailhog
+    image: mailhog/mailhog:v1.0.1
     ports:
       - '1025:1025'
       - '8025:8025'

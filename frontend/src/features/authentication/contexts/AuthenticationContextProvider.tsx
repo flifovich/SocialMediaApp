@@ -1,6 +1,12 @@
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Loader } from "../../../components/loader/Loader";
+import { request } from "../../../utils/api";
+
+interface AuthenticationResponse {
+    token: string;
+    message: string;
+}
 
 export interface User {
     id: string;
@@ -35,43 +41,38 @@ export function AuthenticationContextProvider(){
     const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
 
+
     const isOnAuthPage =
     location.pathname === "/authentication/login" ||
     location.pathname === "/authentication/signup" ||
     location.pathname === "/authentication/request-password-reset";
 
     const login = async (email: string, password: string) => {
-        const response = await fetch(import.meta.env.VITE_API_URL + "/auth/login",{
+        await request<AuthenticationResponse>({
+            endpoint: "/auth/login",
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
             body: JSON.stringify({email, password}),
-        });
-        if (response.ok) {
-            const { token } = await response.json();
-            localStorage.setItem("token", token);
-        } else {
-            const { message } = await response.json();
-            throw new Error(message);
-        }
+            onSuccess: ({token}) => {
+                localStorage.setItem("token", token);
+            },
+            onFailure: (error) => {
+                throw new Error(error);
+            }
+        })
     };
 
     const signup = async (email: string, password: string) => {
-        const response = await fetch(import.meta.env.VITE_API_URL + "/auth/register",{
+        await request<AuthenticationResponse>({
+            endpoint: "/auth/register",
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
             body: JSON.stringify({email, password}),
-        });
-        if (response.ok) {
-            const { token } = await response.json();
-            localStorage.setItem("token", token);
-        } else {
-            const { message } = await response.json();
-            throw new Error(message);
-        }
+            onSuccess: ({token}) => {
+                localStorage.setItem("token", token);
+            },
+            onFailure: (error) => {
+                throw new Error(error);
+            }
+        })
     };
 
     const logout = async () => {
@@ -79,29 +80,24 @@ export function AuthenticationContextProvider(){
         setUser(null);
     };
     
-    const fetchUser = async() => {
-        try {
-            const response = await fetch(import.meta.env.VITE_API_URL + "/auth/user", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            });
-            if(!response.ok) {
-                throw new Error("Authentication failed");
-            }
-            const user = await response.json();
-            setUser(user);
-        }catch(e){
-            console.error(e);
-        }finally {
-            setIsLoading(false);
-        }
-    };
-
+    
     useEffect(() => {
         if(user){
             return;
         }
+        setIsLoading(true);
+        const fetchUser = async() => {
+            await request<User>({
+                endpoint: "/auth/user",
+                onSuccess: (data) => setUser(data),
+                onFailure: (error) => {
+                    console.error(error);
+                    
+                },
+            });
+            setIsLoading(false);
+        };
+
         fetchUser();
     }, [user, location.pathname]);
 
@@ -117,13 +113,11 @@ export function AuthenticationContextProvider(){
         return <Navigate to="/authentication/verify-email" />
     }
     
-
     if (user && user.emailVerified && location.pathname == "/authentication/verify-email") {
         return <Navigate to="/" />;
     }
 
     
-
     if(
         user &&
         user.emailVerified &&

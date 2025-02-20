@@ -10,6 +10,7 @@ import com.SocialApp.SocialApp.features.feed.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FeedService {
@@ -110,5 +111,15 @@ public class FeedService {
             throw new IllegalArgumentException("User is not the author of the comment");
         }
         commentRepository.delete(comment);
+    }
+
+    public List<Comment> getPostComments(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Post not found"));
+        return post.getComments();
+    }
+
+    public Set<User> getPostLikes(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Post Not found"));
+        return post.getLikes();
     }
 }

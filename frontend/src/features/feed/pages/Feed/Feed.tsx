@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../components/button/Button";
 import { LeftSidebar } from "../../components/LeftSidebar/LeftSidebar";
@@ -8,6 +7,7 @@ import { useAuthentication } from "../../../authentication/contexts/Authenticati
 import { useEffect, useState } from "react";
 import { Post } from "../../components/Post/Post";
 import { Modal } from "../../components/Modal/Modal";
+import { request } from "../../../../utils/api.ts";
 
 export function Feed(){
     const navigate = useNavigate();
@@ -19,62 +19,23 @@ export function Feed(){
 
     useEffect(() => {
         const fetchPosts = async () => {
-            try{
-                const response = await fetch(import.meta.env.VITE_API_URL + 
-                    "/feed" +
-                    (feedContent === "connections" ? "" : "/posts"),
-
-                    {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        },
-                    }
-                );
-                if (!response.ok) {
-                    const { message } = await response.json();
-                    throw new Error(message);
-                }
-                const data = await response.json();
-                setPosts(data);
-            }catch (error) {
-                if(error instanceof Error){
-                    setError(error.message);
-                }else {
-                    setError("An error occured. Please try again later.")
-                }
-            }
+            await request<Post[]>({
+                endpoint: "/feed" + (feedContent === "connections" ? "" : "/posts"),
+                onSuccess: (data) => setPosts(data),
+                onFailure: (error) => setError(error),
+            });
         };
         fetchPosts();
     }, [feedContent]);
 
-    
-    
-
     const handlePost = async (content: string, picture: string) => {
-        try {
-            const response = await fetch(import.meta.env.VITE_API_URL + "/feed/posts",
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ content, picture }),
-                }
-            );
-            if (!response.ok) {
-                const { message } = await response.json();
-                throw new Error(message);
-            }
-            const newPost = await response.json();
-            setPosts((prevPosts) => [newPost, ...prevPosts]);
-        }catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError("An error occurred. Please try again later.");
-            }
-        }
+        await request<Post>({
+            endpoint: "/feed/posts",
+            method: "POST",
+            body: JSON.stringify({content, picture}),
+            onSuccess: (data) => setPosts([data, ...posts]),
+            onFailure: (error) => setError(error),
+        });
     }
 
     return (

@@ -5,6 +5,7 @@ import { Input } from "../../../../components/Input/Input";
 import { Button } from "../../../../components/button/Button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { request } from "../../../../utils/api";
 
 export function ResetPassword(){
     const navigate = useNavigate();
@@ -14,50 +15,34 @@ export function ResetPassword(){
     const [isLoading, setIsLoading] = useState(false);
 
     const sendPasswordResetToken = async (email: string) => {
-        try {
-            const response = await fetch(
-                import.meta.env.VITE_API_URL + "/auth/send-password-reset-token?email=" + email,
-                {
-                    method: "PUT",
-                }
-            );
-            if(response.ok) {
+        await request<void>({
+            endpoint: `/auth/send-password-reset-token?email=${email}`,
+            method: "PUT",
+            onSuccess: () => {
                 setErrorMessage("");
                 setEmailSent(true);
-                return;
-            }
-            const { message } = await response.json();
-            setErrorMessage(message);
-        } catch(e) {
-            console.log(e);
-            setErrorMessage("Something went wrong, please try again.");
-        } finally {
-            setIsLoading(false);
-        }
+            },
+            onFailure: (error) => {
+                setErrorMessage(error);
+                console.error(error);
+            },
+        });
+        setIsLoading(false);
     }
 
     const resetPassword = async (email: string, code: string, password: string) => {
-        try{
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL
-
-                }/auth/reset-password?email=${email}&token=${code}&newPassword=${password}`,
-                {
-                    method: "PUT",
-                }
-            );
-            if (response.ok){
+        await request<void>({
+            endpoint: `/auth/reset-password?email=${email}&token=${code}&newPassword=${password}`,
+            method: "PUT",
+            onSuccess: () => {
                 setErrorMessage("");
                 navigate("/login");
-            }
-            const { message } = await response.json();
-            setErrorMessage(message);
-        }catch(e){
-            console.log(e);
-            setErrorMessage("Something went wrong, please try again.");
-        }finally {
-            setIsLoading(false);
-        }
+            },
+            onFailure: (error) => {
+                setErrorMessage(error);
+            },
+        });
+        setIsLoading(false);
     }
     return (
         <div className={classes.root}>

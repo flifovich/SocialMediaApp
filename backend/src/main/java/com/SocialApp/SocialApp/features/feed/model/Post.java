@@ -1,6 +1,7 @@
 package com.SocialApp.SocialApp.features.feed.model;
 
 import com.SocialApp.SocialApp.features.authentication.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,12 +30,14 @@ public class Post {
 
     private LocalDateTime updatedDate;
 
+    @JsonIgnore
     @OneToMany (
             mappedBy = "post",
             cascade = CascadeType.ALL, orphanRemoval = true
     )
     private List<Comment> comments;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "posts_likes",
@@ -111,5 +114,13 @@ public class Post {
 
     public void setLikes(Set<User> likes) {
         this.likes = likes;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

@@ -27,7 +27,18 @@ export function Login(){
             navigate(destination);
         }catch(error){
             if(error instanceof Error){
-                setErrorMessage(error.message);
+                if (!email){
+                    setErrorMessage("Email is Required");
+                }
+                if (!password) {
+                    setErrorMessage("Password is Required");
+                }
+                if (!email && !password) {
+                    setErrorMessage("Email and password are Required");
+                }
+                if (email && password){
+                    setErrorMessage(error.message);
+                }  
             }else{
                 setErrorMessage("Uknown error occured.")
             }

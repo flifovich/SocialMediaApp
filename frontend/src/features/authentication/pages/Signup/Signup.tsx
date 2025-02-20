@@ -24,7 +24,18 @@ export function Signup(){
             navigate("/");
         }catch(error) {
             if(error instanceof Error) {
-                setErrorMessage(error.message);
+                if (!email){
+                    setErrorMessage("Email is Required");
+                }
+                if (!password) {
+                    setErrorMessage("Password is Required");
+                }
+                if (!email && !password) {
+                    setErrorMessage("Email and password are Required");
+                }
+                if (email && password){
+                    setErrorMessage(error.message);
+                } 
             } else {
                 setErrorMessage("An unknown error occured.");
             }
@@ -46,7 +57,7 @@ export function Signup(){
                         <a href="">User Agreement</a>, <a href="">Privacy Policy</a>, and{" "}
                         <a href="">Cookie Policy</a>
                     </p>
-                    <Button size="medium" type="submit" disabled={isLoading}>Create account</Button>
+                    <Button size="medium" type="submit" disabled={isLoading}>{isLoading ? "..." : "Create account"}</Button>
                     
                 </form>
                 <Separator>Or</Separator>

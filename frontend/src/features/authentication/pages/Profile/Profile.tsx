@@ -3,8 +3,9 @@ import { Input } from "../../../../components/Input/Input";
 import { Box } from "../../components/box/Box";
 import classes from "./Profile.module.scss";
 import { Button } from "../../../../components/button/Button";
-import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
+import { useAuthentication, User } from "../../contexts/AuthenticationContextProvider";
 import { useNavigate } from "react-router-dom";
+import { request } from "../../../../utils/api"
 
 export function Profile() {
     const [step, setStep] = useState(0);
@@ -33,33 +34,17 @@ export function Profile() {
             setError("Please fill in short description");
         }
 
-        try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/auth/profile/${user?.id}?firstName=${data.firstName}&lastName=${data.lastName}
+        await request<User>({
+            endpoint: `/auth/profile/${user?.id}?firstName=${data.firstName}&lastName=${data.lastName}
                 &username=${data.username}&description=${data.description}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
-                    },
-                }
-            );
-            if (response.ok){
-                const updatedUser = await response.json();
-                setUser(updatedUser);
-            }else {
-                const { message } = await response.json();
-                throw new Error(message);
-            }
-        }catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-            }else {
-                setError("An unknown error occurred.")
-            }
-        }finally {
-            navigate("/");
-        }
+            method: "PUT",
+            body: JSON.stringify(data),
+            onSuccess: (data) => {
+                setUser(data),
+                navigate("/");
+            },
+            onFailure: (error) => setError(error),
+        })
     };
 
     return (
